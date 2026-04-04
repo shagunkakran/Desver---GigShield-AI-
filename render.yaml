@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: gigshield
+    runtime: node
+    plan: free
+    buildCommand: npm install --legacy-peer-deps && npm run build
+    startCommand: node server/index.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 24.14.1
+      - key: NODE_ENV
+        value: production
+      - key: CRON_INTERVAL_MS
+        value: 0
+      - key: MONGODB_URI
+        sync: false
