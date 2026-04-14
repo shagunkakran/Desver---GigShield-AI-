@@ -1,5 +1,6 @@
 import { evaluateAllSignals } from "./signalFetchers.js";
 import { WorkerModel, ClaimModel } from "../models/index.js";
+import { enforcePolicyLimits } from "./policyEngine.js";
 
 function todayIST() {
   return new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
@@ -21,6 +22,7 @@ async function maybeCreateClaims(worker, bundle) {
       type: "Weather Disruption",
       amount: 300,
       reason: "Cron: precipitation signal from Open-Meteo — automated income-loss claim",
+      weakSignal: Boolean(rain.weakSignal),
     });
   }
 
@@ -30,6 +32,7 @@ async function maybeCreateClaims(worker, bundle) {
       type: "Pollution Spike",
       amount: 150,
       reason: "Cron: PM2.5 / AQI signal from Open-Meteo air-quality API",
+      weakSignal: Boolean(aqi.weakSignal),
     });
   }
 
@@ -39,6 +42,7 @@ async function maybeCreateClaims(worker, bundle) {
       type: "Traffic Blockage",
       amount: 200,
       reason: "Cron: mock civic / corridor disruption feed",
+      weakSignal: Boolean(traffic.weakSignal),
     });
   }
 
@@ -50,14 +54,27 @@ async function maybeCreateClaims(worker, bundle) {
     }).lean();
     if (exists) continue;
 
+    // Edge Case handling: weak signal or partial disruption => partial payout.
+    let requestedAmount = t.amount;
+    if (t.weakSignal || bundle.weakSignalMode) {
+      requestedAmount = Math.floor(requestedAmount * 0.5);
+    }
+
+    // Policy Engine Limits Check
+    const limitCheck = await enforcePolicyLimits(worker, requestedAmount);
+    if (!limitCheck.approved) {
+      console.log(`[Cron] Skipped payout for ${workerId}: ${limitCheck.reason}`);
+      continue;
+    }
+
     const externalId = `CRON-${t.type.slice(0, 4).toUpperCase()}-${workerId}-${Date.now()}`;
     await ClaimModel.create({
       workerId,
       externalId,
       type: t.type,
-      amount: t.amount,
+      amount: limitCheck.amount,
       status: "triggered",
-      reason: t.reason,
+      reason: `${t.reason} | ${limitCheck.reason}`,
       autoTriggered: true,
       triggeredAt: new Date(),
       dedupeDay: day,
@@ -76,7 +93,7 @@ async function maybeCreateClaims(worker, bundle) {
         { workerId, externalId },
         { $set: { status: "completed", completedAt: new Date() } }
       );
-      await WorkerModel.findByIdAndUpdate(workerId, { $inc: { walletBalance: t.amount } });
+      await WorkerModel.findByIdAndUpdate(workerId, { $inc: { walletBalance: limitCheck.amount } });
     }, 4500);
   }
 }
@@ -84,7 +101,7 @@ async function maybeCreateClaims(worker, bundle) {
 export function startTriggerCron() {
   const ms = Number(process.env.CRON_INTERVAL_MS ?? 120000);
   if (ms <= 0) {
-    console.log("[GigShield CRON] disabled (CRON_INTERVAL_MS<=0)");
+    console.log("[Desver CRON] disabled (CRON_INTERVAL_MS<=0)");
     return;
   }
 
@@ -100,15 +117,15 @@ export function startTriggerCron() {
           const bundle = await evaluateAllSignals(w.location);
           await maybeCreateClaims(w, bundle);
         } catch (e) {
-          console.warn("[GigShield CRON] worker", w._id, e.message);
+          console.warn("[Desver CRON] worker", w._id, e.message);
         }
       }
     } catch (e) {
-      console.warn("[GigShield CRON] tick failed:", e.message);
+      console.warn("[Desver CRON] tick failed:", e.message);
     }
   };
 
-  console.log(`[GigShield CRON] interval every ${ms}ms (set CRON_INTERVAL_MS to change)`);
+  console.log(`[Desver CRON] interval every ${ms}ms (set CRON_INTERVAL_MS to change)`);
   setInterval(tick, ms);
   void tick();
 }

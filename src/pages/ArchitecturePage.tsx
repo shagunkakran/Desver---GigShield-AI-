@@ -101,7 +101,7 @@ export default function ArchitecturePage() {
           <div className="max-w-md mx-auto mt-16">
             <h2 className="font-display text-2xl font-bold text-center mb-6">Project Structure</h2>
             <div className="glass-card rounded-xl p-6 font-mono text-sm">
-              <pre className="text-muted-foreground">{`GigShield/
+              <pre className="text-muted-foreground">{`Desver/
 ├── frontend/
 │   ├── src/
 │   │   ├── components/

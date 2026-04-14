@@ -1,8 +1,8 @@
-# GigShield – Income Protection for Gig Workers
+# Desver – Income Protection for Gig Workers
 
 **Tagline:** *Predict. Protect. Pay.*
 
-GigShield is a parametric micro-insurance platform designed to protect gig delivery workers from income loss caused by external disruptions such as extreme weather, pollution, and route blockages.
+Desver is a parametric micro-insurance platform designed to protect gig delivery workers from income loss caused by external disruptions such as extreme weather, pollution, and route blockages.
 
 ---
 
@@ -60,11 +60,11 @@ Currently, gig workers **have limited protection against these small but frequen
 
 # 2. Proposed Solution
 
-**GigShield** is a parametric insurance system designed specifically for gig delivery workers.
+**Desver** is a parametric insurance system designed specifically for gig delivery workers.
 
 The platform monitors delivery events in real time and automatically compensates workers when disruptions cause measurable income loss.
 
-GigShield combines:
+Desver combines:
 
 * Event-driven architecture
 * Risk prediction
@@ -79,25 +79,25 @@ to create a scalable financial safety system for gig workers.
 
 ## 3.1 Weather-Based Disruption Insurance
 
-GigShield detects extreme weather conditions such as heavy rain or heatwaves and compensates workers when working becomes difficult or unsafe.
+Desver detects extreme weather conditions such as heavy rain or heatwaves and compensates workers when working becomes difficult or unsafe.
 
 ---
 
 ## 3.2 Pollution & Environmental Risk Coverage
 
-When pollution levels exceed safe thresholds, workers may reduce activity. GigShield provides compensation during such conditions.
+When pollution levels exceed safe thresholds, workers may reduce activity. Desver provides compensation during such conditions.
 
 ---
 
 ## 3.3 Road & Traffic Disruption Detection
 
-GigShield identifies blocked routes, traffic restrictions, or city-wide disruptions and triggers compensation accordingly.
+Desver identifies blocked routes, traffic restrictions, or city-wide disruptions and triggers compensation accordingly.
 
 ---
 
 ## 3.4 AI Route Risk Predictor
 
-GigShield analyzes traffic data, weather conditions, and historical delivery patterns to identify risky delivery routes.
+Desver analyzes traffic data, weather conditions, and historical delivery patterns to identify risky delivery routes.
 
 The system predicts:
 
@@ -116,7 +116,7 @@ Workers receive safer route suggestions to minimize delays.
 
 ## 3.5 Route-Based Insurance Plans
 
-GigShield dynamically adjusts insurance pricing based on delivery route risk.
+Desver dynamically adjusts insurance pricing based on delivery route risk.
 
 Example:
 
@@ -137,7 +137,7 @@ This **AI-driven pricing model ensures sustainability while protecting workers**
 
 ## 3.6 Optional Extension (Future Scope)
 
-While GigShield primarily focuses on external disruptions, future versions may explore platform-level inefficiencies such as order cancellations and delays to provide broader income protection.
+While Desver primarily focuses on external disruptions, future versions may explore platform-level inefficiencies such as order cancellations and delays to provide broader income protection.
 
 ---
 
@@ -175,7 +175,7 @@ Parametric Trigger Engine
 Wallet / Compensation Payout
 ```
 
-GigShield uses an **event-driven architecture powered by Apache Kafka** to process delivery events in real time.
+Desver uses an **event-driven architecture powered by Apache Kafka** to process delivery events in real time.
 
 ---
 
@@ -215,13 +215,13 @@ Automatic Compensation Decision
 
 # 5A. Adversarial Defense & Anti-Spoofing Strategy
 
-GigShield is designed to be resilient against adversarial attacks such as GPS spoofing and coordinated fraud rings. Our system goes beyond basic location verification and uses multi-signal intelligence to ensure fair and accurate payouts.
+Desver is designed to be resilient against adversarial attacks such as GPS spoofing and coordinated fraud rings. Our system goes beyond basic location verification and uses multi-signal intelligence to ensure fair and accurate payouts.
 
 ---
 
 ## 1. Differentiation (Real vs Spoofed Workers)
 
-Instead of relying only on GPS location, GigShield validates real-world worker activity.
+Instead of relying only on GPS location, Desver validates real-world worker activity.
 
 IF disruption detected
 AND worker shows real delivery activity signals
@@ -244,7 +244,7 @@ This ensures payouts are only given to workers genuinely impacted by disruptions
 
 ## 2. Data Points Beyond GPS
 
-GigShield analyzes multiple behavioral and environmental signals:
+Desver analyzes multiple behavioral and environmental signals:
 
 - GPS movement consistency (not just coordinates)
 - Delivery logs (order acceptance, completion)
@@ -266,7 +266,7 @@ Same timestamps
 
 ## 3. AI-Based Fraud Detection Model
 
-GigShield uses a fraud scoring mechanism:
+Desver uses a fraud scoring mechanism:
 
 Fraud Score = Location anomaly + Activity mismatch + Pattern similarity
 
@@ -319,7 +319,7 @@ Final decision (automated / assisted)
 
 ### Key Insight
 
-GigShield minimizes both **basis risk** and **adversarial exploitation** by combining parametric triggers with behavioral intelligence.
+Desver minimizes both **basis risk** and **adversarial exploitation** by combining parametric triggers with behavioral intelligence.
 
 # 6. Data Sources
 
@@ -373,7 +373,7 @@ Micro-compensation is automatically credited to Shirsh’s wallet.
 
 # 8. Business Model
 
-GigShield follows a **micro-insurance model**.
+Desver follows a **micro-insurance model**.
 
 Workers pay a small weekly premium in exchange for disruption protection.
 
@@ -509,13 +509,13 @@ Reason = Weather Disruption
 
 Worker receives notification:
 
-"₹300 GigShield compensation credited due to heavy rainfall."
+"₹300 Desver compensation credited due to heavy rainfall."
 
 ---
 
 # 12. Expected Impact
 
-GigShield can support millions of gig workers by:
+Desver can support millions of gig workers by:
 
 * protecting daily income
 * reducing financial uncertainty
@@ -570,7 +570,7 @@ Target regions:
 # 14. Project Folder Structure
 
 ```
-GigShield/
+Desver/
 │
 ├── frontend/
 ├── backend/
@@ -588,7 +588,8 @@ GigShield/
 Clone repository:
 
 ```
-git clone https://github.com/<team-repository-owner>/gigshield
+git clone https://github.com/<team-repository-owner>/desver
+cd desver
 ```
 
 Install dependencies:
@@ -597,31 +598,60 @@ Install dependencies:
 npm install
 ```
 
-Run backend:
+Create local environment file:
 
 ```
-npm run start
+npm run setup
 ```
 
-Run frontend:
+Update `.env` with your Atlas URI:
 
 ```
-npm run dev
+MONGODB_URI="mongodb+srv://<user>:<password>@<cluster>.mongodb.net/desver?retryWrites=true&w=majority&appName=Cluster0"
 ```
 
-Run Kafka services:
+Run frontend + backend together:
 
 ```
-docker-compose up kafka
+npm run dev:full
 ```
+
+Run only backend:
+
+```
+npm run dev:backend
+```
+
+Run only frontend:
+
+```
+npm run dev:frontend
+```
+
+Seed hackathon demo data (recommended before demo):
+
+```
+npm run seed:demo
+```
+
+### Deployment (Render single service)
+
+- Build command: `npm install --legacy-peer-deps && npm run build`
+- Start command: `npm run start`
+- Env vars required:
+  - `MONGODB_URI`
+  - `NODE_ENV=production`
+  - `CRON_INTERVAL_MS=0`
+
+This project serves the built React app from the same Node service in production, so frontend and backend deploy together.
 
 ---
 
 # 16. Final Vision
 
-GigShield aims to become the **AI-powered financial protection layer for the global gig economy**.
+Desver aims to become the **AI-powered financial protection layer for the global gig economy**.
 
-By combining AI risk prediction, event-driven systems, and parametric insurance, GigShield ensures gig workers are protected from everyday disruptions such as external disruptions such as weather, pollution, and infrastructure failures.
+By combining AI risk prediction, event-driven systems, and parametric insurance, Desver ensures gig workers are protected from everyday disruptions such as external disruptions such as weather, pollution, and infrastructure failures.
 
 ---
 

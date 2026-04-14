@@ -1,6 +1,6 @@
 import { resolveCoords } from "../cityCoords.js";
 
-const USER_AGENT = "GigShield-Phase2/1.0 (demo; +https://localhost)";
+const USER_AGENT = "Desver-Platform/1.0 (+https://localhost)";
 
 async function fetchJson(url) {
   const res = await fetch(url, { headers: { "User-Agent": USER_AGENT, Accept: "application/json" } });
@@ -102,10 +102,15 @@ export async function evaluateAllSignals(location) {
     fetchMockTrafficDisruption(location),
   ]);
 
-  const weather = results[0].status === "fulfilled" ? results[0].value : { rainProbabilityNext24h: 0.2, error: String(results[0].reason) };
-  const aq = results[1].status === "fulfilled" ? results[1].value : { pm25Latest: 40, aqiRisk: 0.25, error: String(results[1].reason) };
+  // Fallback defaults on error sets a "weak signal" threshold
+  const weather = results[0].status === "fulfilled" ? results[0].value : { rainProbabilityNext24h: 0.3, error: String(results[0].reason), fallback: true };
+  const aq = results[1].status === "fulfilled" ? results[1].value : { pm25Latest: 40, aqiRisk: 0.4, error: String(results[1].reason), fallback: true };
   const hol = results[2].status === "fulfilled" ? results[2].value : { publicHolidayIndia: false, error: String(results[2].reason) };
   const traf = results[3].status === "fulfilled" ? results[3].value : { mockTrafficDisruption: false, error: String(results[3].reason) };
+
+  const failedCount = results.filter((r) => r.status === "rejected").length;
+  const confidence = Math.max(0.4, Number((1 - (failedCount / results.length)).toFixed(2)));
+  const weakSignalMode = failedCount >= 1;
 
   const rainP = weather.rainProbabilityNext24h ?? 0;
   const aqiRisk = aq.aqiRisk ?? 0;
@@ -114,10 +119,12 @@ export async function evaluateAllSignals(location) {
     {
       id: "weather_precipitation",
       name: "Weather — precipitation forecast",
-      active: rainP >= 0.35,
+      active: rainP >= 0.3 || weather.fallback,
       severity: Math.round(rainP * 100) / 100,
+      confidence,
+      weakSignal: Boolean(weather.fallback),
       source: "api.open-meteo.com (forecast)",
-      detail:
+      detail: weather.fallback ? `API Failure: Weak Signal Fallback (Partial Payout)` :
         rainP >= 0.35
           ? `Next 24h rain probability elevated (~${Math.round(rainP * 100)}%) — income-loss risk for outdoor gigs.`
           : `Rain probability moderate (~${Math.round(rainP * 100)}%).`,
@@ -125,10 +132,12 @@ export async function evaluateAllSignals(location) {
     {
       id: "air_quality",
       name: "Air quality — PM2.5 hazard",
-      active: aqiRisk >= 0.45,
+      active: aqiRisk >= 0.4 || aq.fallback,
       severity: aqiRisk,
+      confidence,
+      weakSignal: Boolean(aq.fallback),
       source: "air-quality-api.open-meteo.com",
-      detail:
+      detail: aq.fallback ? `API Failure: Weak Signal Fallback (Partial Payout)` :
         aqiRisk >= 0.45
           ? `PM2.5-derived hazard high (latest ~${aq.pm25Latest} µg/m³). Pollution disruption trigger eligible.`
           : `PM2.5 levels relatively controlled (latest ~${aq.pm25Latest} µg/m³).`,
@@ -138,6 +147,8 @@ export async function evaluateAllSignals(location) {
       name: "Calendar — India public holiday",
       active: hol.publicHolidayIndia,
       severity: hol.publicHolidayIndia ? 1 : 0,
+      confidence,
+      weakSignal: false,
       source: "date.nager.at (IN holidays)",
       detail: hol.publicHolidayIndia
         ? `Today is a public holiday${hol.holidayName ? `: ${hol.holidayName}` : ""} — demand pattern shift.`
@@ -148,7 +159,9 @@ export async function evaluateAllSignals(location) {
       name: "Hyper-local — water logging exposure",
       active: rainP >= 0.4 && ["Mumbai", "Kolkata", "Delhi", "Chennai"].includes(location),
       severity: rainP,
-      source: "GigShield heuristics + forecast",
+      confidence,
+      weakSignal: weakSignalMode,
+      source: "Desver heuristics + forecast",
       detail:
         rainP >= 0.4 && ["Mumbai", "Kolkata", "Delhi", "Chennai"].includes(location)
           ? `${location}: elevated monsoon / urban flood correlation with forecast rain.`
@@ -159,16 +172,31 @@ export async function evaluateAllSignals(location) {
       name: "Traffic / civic disruption (mock API)",
       active: Boolean(traf.mockTrafficDisruption),
       severity: traf.mockTrafficDisruption ? 0.75 : 0.1,
+      confidence,
+      weakSignal: Boolean(traf.error),
       source: "mock-civic-feed (replaceable)",
       detail: traf.detail,
     },
   ];
 
+  // False-trigger guard: downgrade low-confidence weak signals.
+  const normalizedTriggers = triggers.map((t) => {
+    const likelyFalseTrigger = t.active && t.weakSignal && t.severity < 0.5 && t.confidence < 0.75;
+    if (!likelyFalseTrigger) return t;
+    return {
+      ...t,
+      active: false,
+      detail: `${t.detail} | Guardrail: possible false trigger suppressed (low confidence).`,
+    };
+  });
+
   return {
     location,
     lat,
     lon,
-    triggers,
+    triggers: normalizedTriggers,
+    confidence,
+    weakSignalMode,
     features: {
       rainProbabilityNext24h: rainP,
       aqiRisk,

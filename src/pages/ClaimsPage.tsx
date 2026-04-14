@@ -8,10 +8,11 @@
 import { useState } from "react";
 import {
   Zap, CloudRain, Wind, TrafficCone, Clock, CheckCircle,
-  AlertTriangle, Activity, Wallet, Info,
+  AlertTriangle, Activity, Wallet, Info, CreditCard,
 } from "lucide-react";
 import AnimatedSection from "@/components/AnimatedSection";
 import { useWorker, type Claim, type ClaimStatus } from "@/contexts/WorkerContext";
+import { toast } from "sonner";
 
 // ── Status config ────────────────────────────────────────────────────────────
 
@@ -89,11 +90,32 @@ function ClaimPipeline({ status }: { status: ClaimStatus }) {
 
 // ── Claim Card ───────────────────────────────────────────────────────────────
 
-function ClaimCard({ claim }: { claim: Claim }) {
+function ClaimCard({
+  claim,
+  onInstantPayout,
+}: {
+  claim: Claim;
+  onInstantPayout: (claimId: string, gateway: "razorpay" | "stripe" | "upi") => Promise<void>;
+}) {
   const [expanded, setExpanded] = useState(false);
+  const [loadingGateway, setLoadingGateway] = useState<"" | "razorpay" | "stripe" | "upi">("");
   const status = STATUS[claim.status];
   const StatusIcon = status.icon;
   const TypeIcon = TYPE_ICON[claim.type] ?? Activity;
+
+  const isPending = claim.status === "triggered" || claim.status === "processing";
+
+  async function handleInstantPayout(gateway: "razorpay" | "stripe" | "upi") {
+    try {
+      setLoadingGateway(gateway);
+      await onInstantPayout(claim.id, gateway);
+      toast.success(`Instant payout processed via ${gateway.toUpperCase()}.`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Instant payout failed. Please retry.");
+    } finally {
+      setLoadingGateway("");
+    }
+  }
 
   return (
     <div
@@ -137,10 +159,45 @@ function ClaimCard({ claim }: { claim: Claim }) {
               ₹{claim.amount} credited to wallet at {claim.completedAt}
             </div>
           )}
+          {claim.payout?.reference && (
+            <div className="rounded-md border border-border/60 bg-muted/30 px-2.5 py-2 text-xs">
+              <div className="font-medium">Payout Receipt</div>
+              <div className="text-muted-foreground mt-1">
+                {String(claim.payout.provider ?? "gateway").toUpperCase()} | Ref: {claim.payout.reference}
+              </div>
+              <div className="text-muted-foreground">
+                Status: {claim.payout.status ?? "-"} | {claim.payout.sandbox ? "Sandbox" : "Live"}
+              </div>
+            </div>
+          )}
           <div className="text-xs text-muted-foreground flex items-center gap-1">
             <Info className="h-3 w-3" />
-            {claim.autoTriggered ? "Auto-triggered by GigShield event engine" : "Manually submitted"}
+            {claim.autoTriggered ? "Auto-triggered by Desver event engine" : "Manually submitted"}
           </div>
+          {isPending && (
+            <div className="pt-2">
+              <div className="text-xs font-medium mb-2 text-primary flex items-center gap-1">
+                <CreditCard className="h-3 w-3" />
+                Instant Payout (Simulated)
+              </div>
+              <div className="flex gap-2 flex-wrap">
+                {(["razorpay", "stripe", "upi"] as const).map((gw) => (
+                  <button
+                    key={gw}
+                    type="button"
+                    disabled={Boolean(loadingGateway)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      void handleInstantPayout(gw);
+                    }}
+                    className="px-2.5 py-1 rounded-md text-xs bg-primary/10 text-primary hover:bg-primary/20 disabled:opacity-50"
+                  >
+                    {loadingGateway === gw ? "Processing..." : gw.toUpperCase()}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -150,7 +207,7 @@ function ClaimCard({ claim }: { claim: Claim }) {
 // ── Main Page ────────────────────────────────────────────────────────────────
 
 export default function ClaimsPage() {
-  const { claims } = useWorker();
+  const { claims, instantPayout } = useWorker();
   const [filter, setFilter] = useState<ClaimStatus | "all">("all");
 
   const filtered =
@@ -161,20 +218,20 @@ export default function ClaimsPage() {
     .reduce((sum, c) => sum + c.amount, 0);
 
   return (
-    <div className="py-16">
+    <div className="py-16 aurora-bg min-h-[calc(100vh-4rem)]">
       <div className="container mx-auto px-4">
         {/* Header */}
         <AnimatedSection>
-          <div className="text-center mb-12">
+          <div className="text-center mb-12 glass-card-premium gradient-frame rounded-2xl p-6 md:p-8 max-w-4xl mx-auto neon-ring card-lift">
             <div className="inline-flex items-center gap-2 bg-primary/10 text-primary rounded-full px-4 py-1.5 text-sm font-medium mb-4">
               <Zap className="h-4 w-4" />
               Zero-Touch Automation
             </div>
-            <h1 className="font-display text-3xl md:text-5xl font-bold mb-3">
+            <h1 className="font-display text-3xl md:text-5xl font-bold mb-3 text-gradient">
               Claims Management
             </h1>
             <p className="text-muted-foreground max-w-xl mx-auto">
-              All claims are triggered <strong>automatically</strong> by the GigShield event engine.
+              All claims are triggered <strong>automatically</strong> by the Desver event engine.
               No manual filing required — disruption is detected and compensation is initiated instantly.
             </p>
           </div>
@@ -197,7 +254,7 @@ export default function ClaimsPage() {
             { icon: Wallet, label: "Total Paid Out", value: `₹${totalPaid}` },
           ].map((stat) => (
             <AnimatedSection key={stat.label}>
-              <div className="glass-card rounded-xl p-4 text-center">
+              <div className="glass-card-premium card-lift rounded-xl p-4 text-center transition-transform">
                 <stat.icon className="h-5 w-5 text-primary mx-auto mb-2" />
                 <div className="font-display text-xl font-bold">{stat.value}</div>
                 <div className="text-xs text-muted-foreground">{stat.label}</div>
@@ -208,7 +265,7 @@ export default function ClaimsPage() {
 
         {/* How it works */}
         <AnimatedSection>
-          <div className="max-w-4xl mx-auto mb-8 bg-primary/5 border border-primary/15 rounded-xl p-5">
+          <div className="max-w-4xl mx-auto mb-8 bg-primary/10 border border-primary/25 rounded-xl p-5 backdrop-blur-md card-lift">
             <h3 className="font-display font-semibold text-sm mb-3 text-primary flex items-center gap-2">
               <Info className="h-4 w-4" /> How Zero-Touch Claims Work
             </h3>
@@ -259,15 +316,20 @@ export default function ClaimsPage() {
                 <Activity className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
                 <p className="text-muted-foreground">
                   {claims.length === 0
-                    ? "No claims yet. Go to the Premium page and toggle Rain Detected to simulate an automated claim."
+                    ? "No claims yet. Trigger a live disruption from Premium page and watch AI confidence + instant payout simulation in action."
                     : "No claims match this filter."}
                 </p>
+                {claims.length === 0 && (
+                  <div className="mt-4 text-xs text-primary/80">
+                    Pro tip: Use a weak-signal trigger to demo partial payout (50%) logic.
+                  </div>
+                )}
               </div>
             </AnimatedSection>
           ) : (
             filtered.map((claim, i) => (
               <AnimatedSection key={claim.id} delay={i * 60}>
-                <ClaimCard claim={claim} />
+                <ClaimCard claim={claim} onInstantPayout={instantPayout} />
               </AnimatedSection>
             ))
           )}

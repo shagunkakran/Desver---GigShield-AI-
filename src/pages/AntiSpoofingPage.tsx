@@ -74,7 +74,7 @@ export default function AntiSpoofingPage() {
               Anti-Spoofing & Fraud Detection
             </h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              GigShield goes beyond GPS verification. Our multi-signal intelligence system
+              Desver goes beyond GPS verification. Our multi-signal intelligence system
               prevents GPS spoofing, coordinated fraud rings, and fake disruption claims while
               protecting honest workers.
             </p>

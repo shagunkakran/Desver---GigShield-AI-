@@ -90,10 +90,11 @@ export default function PolicyPage() {
   function handleActivate() {
     selectPolicy(selected, premiumResult.total);
     setConfirmed(true);
-    setTimeout(() => navigate("/premium"), 1400);
+    setTimeout(() => navigate("/worker/premium"), 1400);
   }
 
   const selectedPlan = PLANS.find((p) => p.id === selected)!;
+  const activeCoverageHours = policy?.plan === "premium" ? 24 : policy?.plan ? 12 : 0;
 
   return (
     <div className="py-16">
@@ -121,6 +122,29 @@ export default function PolicyPage() {
             )}
           </div>
         </AnimatedSection>
+
+        {policy?.active && (
+          <AnimatedSection>
+            <div className="max-w-4xl mx-auto mb-8 glass-card-premium rounded-2xl p-5 card-lift">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                <div>
+                  <div className="text-xs text-muted-foreground uppercase tracking-wide">Active Policy</div>
+                  <div className="font-display text-xl font-bold capitalize">{policy.plan} plan</div>
+                  <div className="text-sm text-muted-foreground">
+                    Coverage Hours: {activeCoverageHours}h/day • Weekly Premium: ₹{policy.weeklyPremium}
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  {policy.plan !== "premium" ? (
+                    <Button variant="outline" onClick={() => setSelected("premium")}>Upgrade</Button>
+                  ) : (
+                    <Button variant="outline" onClick={() => setSelected("basic")}>Downgrade</Button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </AnimatedSection>
+        )}
 
         {/* Plan selector */}
         <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto mb-10">

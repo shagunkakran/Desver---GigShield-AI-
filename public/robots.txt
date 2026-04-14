@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://gigshield.app/sitemap.xml
+Sitemap: https://desver.app/sitemap.xml

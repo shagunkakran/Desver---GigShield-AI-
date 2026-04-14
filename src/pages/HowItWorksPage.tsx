@@ -36,8 +36,8 @@ const steps = [
     icon: Wallet,
     step: 5,
     title: "Automatic Payout",
-    description: "Compensation is credited directly to the worker's GigShield wallet with a notification.",
-    detail: { compensation: "₹300", reason: "Weather Disruption", notification: "₹300 GigShield compensation credited due to heavy rainfall." },
+    description: "Compensation is credited directly to the worker's Desver wallet with a notification.",
+    detail: { compensation: "₹300", reason: "Weather Disruption", notification: "₹300 Desver compensation credited due to heavy rainfall." },
   },
 ];
 
@@ -63,7 +63,7 @@ export default function HowItWorksPage() {
           <div className="text-center mb-10">
             <h1 className="font-display text-3xl md:text-5xl font-bold mb-4">How It Works</h1>
             <p className="text-muted-foreground max-w-2xl mx-auto mb-6">
-              From disruption detection to automatic payout — a complete walkthrough of the GigShield demo flow.
+              From disruption detection to automatic payout — a complete walkthrough of the Desver demo flow.
             </p>
             <Button onClick={runDemo} disabled={running} className="gap-2">
               <Play className="h-4 w-4" />

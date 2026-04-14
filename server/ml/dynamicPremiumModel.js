@@ -1,5 +1,5 @@
 /**
- * GigShield dynamic pricing — interpretable linear model (logistic-regression style scores → ₹ adjustment).
+ * Desver dynamic pricing — interpretable linear model (logistic-regression style scores → ₹ adjustment).
  * Demonstrates ML-style hyper-local pricing: e.g. −₹2/week in water-logging-safe zones when other risks are calm.
  */
 

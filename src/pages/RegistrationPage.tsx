@@ -57,6 +57,8 @@ export default function RegistrationPage() {
 
   const [form, setForm] = useState({
     name: profile?.name ?? "",
+    email: profile?.email ?? "",
+    password: "",
     workerType: profile?.workerType ?? "delivery",
     location: profile?.location ?? "Delhi",
   });
@@ -74,30 +76,36 @@ export default function RegistrationPage() {
   }
 
   async function handleSubmit() {
-    if (!form.name.trim()) return;
+    if (!form.name.trim() || !form.email.trim() || form.password.length < 6) return;
     const risk = calculateRiskLevel(form.location, form.workerType);
     try {
       const res = await registerWorkerApi({
         name: form.name.trim(),
+        email: form.email.trim().toLowerCase(),
+        password: form.password,
         workerType: form.workerType,
         location: form.location,
         riskLevel: risk.level,
         riskScore: risk.score,
+        role: "worker",
       });
       register({
         name: form.name.trim(),
+        email: form.email.trim().toLowerCase(),
         workerType: form.workerType as any,
         location: form.location,
         serverId: res.id,
+        role: "worker",
+        authToken: res.token,
       });
     } catch {
       toast.error(
-        "Server registration failed. Start MongoDB, set MONGODB_URI in MEEHSUS/.env, then run npm run server."
+        "Registration failed. Check backend/Mongo, or use a different email if already registered."
       );
       return;
     }
     setSubmitted(true);
-    setTimeout(() => navigate("/policy"), 1600);
+    setTimeout(() => navigate("/worker/dashboard"), 1000);
   }
 
   return (
@@ -108,7 +116,7 @@ export default function RegistrationPage() {
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 bg-primary/10 text-primary rounded-full px-4 py-1.5 text-sm font-medium mb-4">
               <Shield className="h-4 w-4" />
-              Phase 2 — Worker Onboarding
+              Worker Onboarding
             </div>
             <h1 className="font-display text-3xl md:text-5xl font-bold mb-3">
               Worker Registration
@@ -136,6 +144,28 @@ export default function RegistrationPage() {
                   placeholder="e.g. Shirsh Gupta"
                   value={form.name}
                   onChange={(e) => handleChange("name", e.target.value)}
+                  className="w-full rounded-lg border border-input bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium">Email *</label>
+                <input
+                  type="email"
+                  placeholder="e.g. worker@desver.com"
+                  value={form.email}
+                  onChange={(e) => handleChange("email", e.target.value)}
+                  className="w-full rounded-lg border border-input bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium">Password *</label>
+                <input
+                  type="password"
+                  placeholder="At least 6 characters"
+                  value={form.password}
+                  onChange={(e) => handleChange("password", e.target.value)}
                   className="w-full rounded-lg border border-input bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
                 />
               </div>
@@ -191,7 +221,7 @@ export default function RegistrationPage() {
                 <Button
                   className="w-full gap-2"
                   onClick={handleSubmit}
-                  disabled={!form.name.trim()}
+                  disabled={!form.name.trim() || !form.email.trim() || form.password.length < 6}
                 >
                   Continue to Policy Selection
                   <ChevronRight className="h-4 w-4" />

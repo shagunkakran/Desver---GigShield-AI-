@@ -5,13 +5,13 @@ import path from "path";
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
-    port: 8080,
+    port: Number(process.env.VITE_PORT ?? 8080),
     hmr: {
       overlay: false,
     },
     proxy: {
       "/api": {
-        target: "http://127.0.0.1:5050",
+        target: process.env.VITE_API_PROXY_TARGET ?? "http://127.0.0.1:5050",
         changeOrigin: true,
       },
     },

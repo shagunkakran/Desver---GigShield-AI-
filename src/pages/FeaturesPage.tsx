@@ -7,7 +7,7 @@ const features = [
     icon: CloudRain,
     title: "Weather-Based Disruption Insurance",
     description:
-      "GigShield detects extreme weather conditions such as heavy rain, storms, or heatwaves and compensates workers when working becomes difficult or unsafe. Our weather APIs monitor conditions in real-time and trigger payouts automatically.",
+      "Desver detects extreme weather conditions such as heavy rain, storms, or heatwaves and compensates workers when working becomes difficult or unsafe. Our weather APIs monitor conditions in real-time and trigger payouts automatically.",
     details: [
       "Real-time weather monitoring via APIs",
       "Automatic threshold-based triggers",
@@ -19,7 +19,7 @@ const features = [
     icon: Wind,
     title: "Pollution & Environmental Risk Coverage",
     description:
-      "When pollution levels (AQI) exceed safe thresholds, workers may reduce activity or face health risks. GigShield provides compensation during such periods, encouraging workers to prioritize their health.",
+      "When pollution levels (AQI) exceed safe thresholds, workers may reduce activity or face health risks. Desver provides compensation during such periods, encouraging workers to prioritize their health.",
     details: [
       "AQI monitoring and threshold alerts",
       "Health risk based compensation",
@@ -31,7 +31,7 @@ const features = [
     icon: TrafficCone,
     title: "Road & Traffic Disruption Detection",
     description:
-      "GigShield identifies blocked routes, traffic restrictions, protests, or city-wide disruptions and triggers compensation when delivery becomes impractical due to infrastructure issues.",
+      "Desver identifies blocked routes, traffic restrictions, protests, or city-wide disruptions and triggers compensation when delivery becomes impractical due to infrastructure issues.",
     details: [
       "Real-time traffic API integration",
       "Protest and road block detection",
@@ -55,7 +55,7 @@ const features = [
     icon: Shield,
     title: "Adversarial Defense & Anti-Spoofing",
     description:
-      "GigShield validates real-world worker activity beyond GPS. Our fraud detection system analyzes movement patterns, delivery logs, app session data, and cluster patterns to prevent GPS spoofing and coordinated fraud rings.",
+      "Desver validates real-world worker activity beyond GPS. Our fraud detection system analyzes movement patterns, delivery logs, app session data, and cluster patterns to prevent GPS spoofing and coordinated fraud rings.",
     details: [
       "Multi-signal worker activity validation",
       "GPS movement consistency checks",

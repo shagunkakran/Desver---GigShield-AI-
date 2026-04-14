@@ -2,8 +2,8 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Shield, CloudRain, Wind, TrafficCone, Route, TrendingUp,
-  ArrowRight, Zap, Users, IndianRupee, Fingerprint, Database,
-  Cpu, BarChart3
+  ArrowRight, Zap, Users, IndianRupee, Fingerprint,
+  BarChart3
 } from "lucide-react";
 import AnimatedSection from "@/components/AnimatedSection";
 import { useScrollAnimation, useCountUp } from "@/hooks/useScrollAnimation";
@@ -38,7 +38,7 @@ const features = [
     icon: Fingerprint,
     title: "Anti-Spoofing Defense",
     description: "Multi-signal fraud detection preventing GPS spoofing and coordinated attacks.",
-    link: "/anti-spoofing",
+    link: "/features",
   },
   {
     icon: BarChart3,
@@ -50,13 +50,9 @@ const features = [
 
 const sections = [
   { icon: Shield, label: "Features", path: "/features", desc: "Explore all platform capabilities" },
-  { icon: Cpu, label: "How It Works", path: "/how-it-works", desc: "See the complete demo flow" },
   { icon: IndianRupee, label: "Insurance Plans", path: "/plans", desc: "Route-based pricing tiers" },
-  { icon: BarChart3, label: "Dashboard", path: "/dashboard", desc: "Worker dashboard preview" },
-  { icon: Fingerprint, label: "Anti-Spoofing", path: "/anti-spoofing", desc: "Fraud detection system" },
-  { icon: Database, label: "Architecture", path: "/architecture", desc: "System design & tech stack" },
-  { icon: TrendingUp, label: "Roadmap", path: "/roadmap", desc: "Future growth phases" },
-  { icon: Users, label: "Team", path: "/team", desc: "Meet the builders" },
+  { icon: BarChart3, label: "Worker Dashboard", path: "/worker/dashboard", desc: "Worker operations panel" },
+  { icon: Fingerprint, label: "Admin Dashboard", path: "/admin/dashboard", desc: "Insurer analytics panel" },
 ];
 
 export default function HomePage() {
@@ -87,21 +83,21 @@ export default function HomePage() {
 
               <AnimatedSection delay={200}>
                 <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-xl">
-                  GigShield protects gig delivery workers from income loss caused by weather disruptions,
+                  Desver protects gig delivery workers from income loss caused by weather disruptions,
                   pollution spikes, and traffic blockages — automatically.
                 </p>
               </AnimatedSection>
 
               <AnimatedSection delay={300}>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
-                  <Link to="/dashboard">
+                  <Link to="/worker/dashboard">
                     <Button size="lg" className="gap-2 w-full sm:w-auto">
                       Open Dashboard <ArrowRight className="h-4 w-4" />
                     </Button>
                   </Link>
-                  <Link to="/how-it-works">
+                  <Link to="/features">
                     <Button variant="outline" size="lg" className="w-full sm:w-auto">
-                      See How It Works
+                      Explore Features
                     </Button>
                   </Link>
                 </div>
@@ -133,7 +129,7 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <AnimatedSection>
             <div className="text-center mb-12">
-              <h2 className="font-display text-3xl md:text-4xl font-bold mb-4 text-foreground">Explore GigShield</h2>
+              <h2 className="font-display text-3xl md:text-4xl font-bold mb-4 text-foreground">Explore Desver</h2>
               <p className="text-muted-foreground max-w-xl mx-auto">Navigate to any section of the platform — every feature is clearly organized.</p>
             </div>
           </AnimatedSection>
@@ -161,7 +157,7 @@ export default function HomePage() {
             <div className="text-center mb-8">
               <h2 className="font-display text-3xl md:text-4xl font-bold mb-4 text-foreground">Comprehensive Protection</h2>
               <p className="text-muted-foreground max-w-xl mx-auto">
-                GigShield monitors delivery events in real time and automatically compensates workers when disruptions cause income loss.
+                Desver monitors delivery events in real time and automatically compensates workers when disruptions cause income loss.
               </p>
             </div>
           </AnimatedSection>
@@ -196,7 +192,7 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <AnimatedSection>
             <div className="text-center mb-12">
-              <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">How GigShield Works</h2>
+              <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">How Desver Works</h2>
               <p className="text-muted-foreground max-w-xl mx-auto">
                 From disruption detection to automatic payout in under 5 minutes.
               </p>
@@ -222,9 +218,9 @@ export default function HomePage() {
             ))}
           </div>
           <div className="text-center mt-10">
-            <Link to="/how-it-works">
+            <Link to="/features">
               <Button className="gap-2">
-                Full Demo Flow <ArrowRight className="h-4 w-4" />
+                Explore Full Features <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
           </div>
@@ -240,14 +236,14 @@ export default function HomePage() {
                 Ready to protect your income?
               </h2>
               <p className="text-muted-foreground mb-6">
-                Join thousands of gig workers who trust GigShield for daily income protection.
+                Join thousands of gig workers who trust Desver for daily income protection.
               </p>
               <div className="flex gap-3 justify-center flex-wrap">
                 <Link to="/plans">
                   <Button size="lg">View Plans</Button>
                 </Link>
-                <Link to="/anti-spoofing">
-                  <Button variant="outline" size="lg">See Fraud Defense</Button>
+                <Link to="/register">
+                  <Button variant="outline" size="lg">Register Now</Button>
                 </Link>
               </div>
             </div>

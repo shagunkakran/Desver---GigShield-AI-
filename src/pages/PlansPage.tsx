@@ -113,7 +113,7 @@ export default function PlansPage() {
                     </li>
                   ))}
                 </ul>
-                <Link to="/dashboard">
+                <Link to="/worker/dashboard">
                   <Button className="w-full" variant={i === selected ? "default" : "outline"}>
                     Select Plan
                   </Button>

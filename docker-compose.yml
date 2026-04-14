@@ -4,7 +4,7 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - gigshield_mongo_data:/data/db
+      - desver_mongo_data:/data/db
 
 volumes:
-  gigshield_mongo_data:
+  desver_mongo_data:
