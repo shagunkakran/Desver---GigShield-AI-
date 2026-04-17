@@ -37,7 +37,8 @@ Developed by a small engineering team. Roles are assigned as follows:
 14. Project Folder Structure
 15. Repository Setup
 16. Final Vision
-17. License
+17. Pitch Deck
+18. License
 
 ---
 
@@ -655,6 +656,16 @@ By combining AI risk prediction, event-driven systems, and parametric insurance,
 
 ---
 
-# 17. License
+# 17. Pitch Deck
+
+Public pitch deck and demo assets are available here:
+
+- [Desver Pitch Deck (Google Drive)](https://drive.google.com/drive/folders/1bNhunw5q8Bjka-suy8MSPkOFI2GpG7z8?usp=drive_link)
+- `Video:` `Video1776446951357170.mp4` (available inside the Drive folder)
+- `Pitch PDF:` `DESVER.pdf` (available inside the Drive folder)
+
+---
+
+# 18. License
 
 This project was created as a hackathon prototype and is intended for demonstration purposes.

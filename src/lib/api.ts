@@ -2,7 +2,19 @@
  * Desver API client — calls Node backend when `npm run server` + Vite proxy are running.
  */
 
-const BASE = import.meta.env.VITE_API_BASE?.replace(/\/$/, "") ?? "";
+/** Production API origin (no trailing slash). Empty = same-origin / Vite proxy in dev. */
+function apiBase(): string {
+  const raw = import.meta.env.VITE_API_BASE;
+  if (raw == null || typeof raw !== "string") return "";
+  return raw.trim().replace(/\/+$/, "");
+}
+
+function apiUrl(path: string): string {
+  const base = apiBase();
+  const p = path.startsWith("/") ? path : `/${path}`;
+  if (!base) return p;
+  return `${base}${p}`;
+}
 const AUTH_STORAGE_KEY = "desver_worker_state";
 const SESSION_EXPIRED_TOAST_KEY = "desver_session_expired_toast";
 
@@ -67,12 +79,12 @@ async function handle<T>(res: Response): Promise<T> {
 }
 
 export async function getJson<T>(path: string): Promise<T> {
-  const res = await fetch(`${BASE}${path}`, { headers: withAuthHeaders() });
+  const res = await fetch(apiUrl(path), { headers: withAuthHeaders() });
   return handle<T>(res);
 }
 
 export async function postJson<T>(path: string, body: unknown): Promise<T> {
-  const res = await fetch(`${BASE}${path}`, {
+  const res = await fetch(apiUrl(path), {
     method: "POST",
     headers: withAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body ?? {}),
@@ -81,7 +93,7 @@ export async function postJson<T>(path: string, body: unknown): Promise<T> {
 }
 
 export async function putJson<T>(path: string, body: unknown): Promise<T> {
-  const res = await fetch(`${BASE}${path}`, {
+  const res = await fetch(apiUrl(path), {
     method: "PUT",
     headers: withAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body ?? {}),
@@ -90,7 +102,7 @@ export async function putJson<T>(path: string, body: unknown): Promise<T> {
 }
 
 export async function patchJson<T>(path: string, body: unknown): Promise<T> {
-  const res = await fetch(`${BASE}${path}`, {
+  const res = await fetch(apiUrl(path), {
     method: "PATCH",
     headers: withAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body ?? {}),
